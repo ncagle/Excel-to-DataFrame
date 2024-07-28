@@ -1,0 +1,12 @@
+__Last Script Call Arguments__
+
+Script Path (str): C:\Projects\_RnD_\_Repos\Excel-to-DataFrame\testing\main.py
+
+Range Address (str): $C$1:$D$5
+
+Active Sheet (str): Sheet1
+
+Export Path (WindowsPath): C:\Projects\_RnD_\_Repos\Excel-to-DataFrame\testing\fixed_active_workbook_path.pkl
+
+Spreadsheet Path (WindowsPath): C:\Projects\_RnD_\_Repos\Excel-to-DataFrame\testing\workbook.xlsm
+

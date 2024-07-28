@@ -105,14 +105,16 @@ def idx_to_col(idx: int, zero_idx: bool=True) -> str:
 
 
 # Load the selected data from the excel sheet and serialize it as a pickle
-def load_and_pickle(range_address="$C$1:$D$5", active_sheet="Sheet1"):
+# def load_and_pickle(range_address="$C$1:$D$5", active_sheet="Sheet1", export_path: Path):
+def load_and_pickle(range_address: str, active_sheet: str, export_path: Path, spreadsheet_path: Path):
     """
     _summary_
 
     Default parameter values are examples for testing and referenced by comments.
     """
     # Read the bounds of the sheet
-    _, max_col = pd.read_excel("workbook.xlsm", sheet_name=active_sheet).shape
+    # _, max_col = pd.read_excel("workbook.xlsm", sheet_name=active_sheet).shape
+    _, max_col = pd.read_excel(spreadsheet_path, sheet_name=active_sheet).shape
 
     # Parse the range_address into column and row start and end
     range_start, range_end = range_address.split(":")  # "$C$1", "$D$5"
@@ -149,7 +151,8 @@ def load_and_pickle(range_address="$C$1:$D$5", active_sheet="Sheet1"):
 
     # Read the specified range from the sheet
     data_selection = pd.read_excel(
-        "workbook.xlsm",
+        # "workbook.xlsm",
+        spreadsheet_path,
         sheet_name=active_sheet,
         usecols=usecols,
         skiprows=skiprows,
@@ -161,34 +164,42 @@ def load_and_pickle(range_address="$C$1:$D$5", active_sheet="Sheet1"):
     # Slice the DataFrame to get the selected range
     # data_selection = spreadsheet.iloc[row_start:row_end+1, col_start_index:col_end_index+1]
 
-    data_selection.to_pickle("workbook_range_df.pkl")
     # data_selection.to_csv("workbook_range_df.txt")  # For quickly checking output
+    # data_selection.to_pickle("workbook_range_df.pkl")
+    data_selection.to_pickle(export_path)
 
     return True
 
 
 def main():
-    if len(sys.argv) >= 3:
+    expected_args = 5
+    if len(sys.argv) >= expected_args:
         range_address = sys.argv[1]
         print(f"Range Address: {range_address}")
         active_sheet = sys.argv[2]
         print(f"Active Sheet: {active_sheet}")
+        export_path = Path(sys.argv[3])
+        print(f"Export Path: {export_path}")
+        spreadsheet_path = Path(sys.argv[4])
+        print(f"Spreadsheet Path: {export_path}")
 
         with open("args.txt", "w", encoding="utf-8") as file:
             _ = file.write("__Last Script Call Arguments__\n\n")
-            _ = file.write(f"Script Path ({type(sys.argv[0]).__name__}): {sys.argv[0]}\n")
-            _ = file.write(f"Range Address ({type(range_address).__name__}): {range_address}\n")
-            _ = file.write(f"Active Sheet ({type(active_sheet).__name__}): {active_sheet}\n")
+            _ = file.write(f"Script Path ({type(sys.argv[0]).__name__}): {sys.argv[0]}\n\n")
+            _ = file.write(f"Range Address ({type(range_address).__name__}): {range_address}\n\n")
+            _ = file.write(f"Active Sheet ({type(active_sheet).__name__}): {active_sheet}\n\n")
+            _ = file.write(f"Export Path ({type(export_path).__name__}): {str(export_path)}\n\n")
+            _ = file.write(f"Spreadsheet Path ({type(spreadsheet_path).__name__}): {str(spreadsheet_path)}\n\n")
 
-            if len(sys.argv) > 3:
-                _ = file.write("\n__Unexpected Arguments__\n\n")
+            if len(sys.argv) > expected_args:
+                _ = file.write("\n\n__Unexpected Arguments__\n\n")
                 for idx, arg in enumerate(sys.argv):
                     if idx not in [0, 1, 2]:
                         _ = file.write(f"Argument {idx}: {arg}\n")
 
         try:
             # Load the selected data from the excel sheet and serialize it as a pickle
-            export_success = load_and_pickle(range_address, active_sheet)
+            export_success = load_and_pickle(range_address, active_sheet, export_path, spreadsheet_path)
         except Exception as e:
             with open("ERROR EXPORTING DATAFRAME.txt", "w", encoding="utf-8") as file:
                 _ = file.write("__ERROR EXPORTING DATAFRAME__\n\n")
